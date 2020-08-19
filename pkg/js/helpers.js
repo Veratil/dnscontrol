@@ -899,3 +899,39 @@ function require_glob() {
     }
     return files
 }
+
+
+function isStringOrNumber(x) {
+    return _.isString(x) || _.isNumber(x);
+}
+
+var SOA = recordBuilder('SOA', {
+    args: [
+        ['nameserver', _.isString],
+        ['mbox', _.isString],
+        ['refresh', isStringOrNumber],
+        ['retry', isStringOrNumber],
+        ['expire', isStringOrNumber],
+        ['minttl', isStringOrNumber],
+    ],
+    transform: function(record, args, mods) {
+        var checkValue = function(key, val) {
+            // refresh, retry, expire, and minttl are all TTLs
+            // accept a number or a string duration value
+            if (_.isNumber(val)) {
+                record[key] = val;
+            } else if (_.isString(val)) {
+                record[key] = stringToDuration(val);
+            } else {
+                throw "ERROR: Invalid type for " + key + ", got " + typeof val;
+            }
+        }
+        record.name = '@';
+        record.target = args.nameserver;
+        record.soambox = args.mbox;
+        checkValue('soarefresh', args.refresh);
+        checkValue('soaretry', args.retry);
+        checkValue('soaexpire', args.expire);
+        checkValue('soaminttl', args.minttl);
+    },
+});

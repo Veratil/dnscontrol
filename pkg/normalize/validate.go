@@ -57,6 +57,7 @@ func validateRecordTypes(rec *models.RecordConfig, domain string, pTypes []strin
 		"TLSA":             true,
 		"IMPORT_TRANSFORM": false,
 		"MX":               true,
+		"SOA":              true,
 		"SRV":              true,
 		"SSHFP":            true,
 		"TXT":              true,
@@ -460,6 +461,7 @@ var providerCapabilityChecks = []pairTypeCapability{
 	capabilityCheck("SRV", providers.CanUseSRV),
 	capabilityCheck("TLSA", providers.CanUseTLSA),
 	capabilityCheck("AZURE_ALIAS", providers.CanUseAzureAlias),
+	capabilityCheck("SOA", providers.CanUseSOA),
 
 	// DS needs special record-level checks
 	{

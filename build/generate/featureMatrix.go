@@ -34,6 +34,7 @@ func generateFeatureMatrix() error {
 			{"CAA", "Provider can manage CAA records"},
 			{"PTR", "Provider supports adding PTR records for reverse lookup zones"},
 			{"NAPTR", "Provider can manage NAPTR records"},
+			{"SOA", "Provider can manage SOA records"},
 			{"SRV", "Driver has explicitly implemented SRV record management"},
 			{"SSHFP", "Provider can manage SSHFP records"},
 			{"TLSA", "Provider can manage TLSA records"},

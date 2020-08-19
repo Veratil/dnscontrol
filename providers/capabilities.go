@@ -69,6 +69,9 @@ const (
 
 	// CanUseAzureAlias indicates the provider support the specific Azure_ALIAS records that only the Azure provider supports
 	CanUseAzureAlias
+
+	// CanUseSOA indicates the provider can handle SOA records
+	CanUseSOA
 )
 
 var providerCapabilities = map[string]map[Capability]bool{}

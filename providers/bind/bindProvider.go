@@ -36,6 +36,7 @@ var features = providers.DocumentationNotes{
 	providers.CanUseDS:               providers.Can(),
 	providers.CanUsePTR:              providers.Can(),
 	providers.CanUseNAPTR:            providers.Can(),
+	providers.CanUseSOA:              providers.Can(),
 	providers.CanUseSRV:              providers.Can(),
 	providers.CanUseSSHFP:            providers.Can(),
 	providers.CanUseTLSA:             providers.Can(),
@@ -85,10 +86,11 @@ type SoaInfo struct {
 	Retry   uint32 `json:"retry"`
 	Expire  uint32 `json:"expire"`
 	Minttl  uint32 `json:"minttl"`
+	TTL     uint32 `json:"ttl,omitempty"`
 }
 
 func (s SoaInfo) String() string {
-	return fmt.Sprintf("%s %s %d %d %d %d %d", s.Ns, s.Mbox, s.Serial, s.Refresh, s.Retry, s.Expire, s.Minttl)
+	return fmt.Sprintf("%s %s %d %d %d %d %d %d", s.Ns, s.Mbox, s.Serial, s.Refresh, s.Retry, s.Expire, s.Minttl, s.TTL)
 }
 
 // Bind is the provider handle for the Bind driver.
@@ -154,9 +156,14 @@ func (c *Bind) GetZoneRecords(domain string) (models.Records, error) {
 
 	zp := dns.NewZoneParser(strings.NewReader(string(content)), domain, c.zonefile)
 
+	var foundSOA bool = false
 	for rr, ok := zp.Next(); ok; rr, ok = zp.Next() {
 		rec := models.RRtoRC(rr, domain)
 		if rec.Type == "SOA" {
+			if foundSOA == true {
+				return nil, fmt.Errorf("second SOA record found while parsing '%v'", c.zonefile)
+			}
+			foundSOA = true
 		}
 		foundRecords = append(foundRecords, &rec)
 	}
